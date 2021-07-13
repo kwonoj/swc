@@ -2451,9 +2451,6 @@ fn unescape_tpl_lit(s: &str) -> String {
 
                     result.push_str("\\r");
                 }
-                '\n' => {
-                    result.push_str("\\n");
-                }
 
                 // TODO: Handle all escapes
                 _ => {

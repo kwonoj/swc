@@ -37,6 +37,7 @@ impl Fold for TemplateLiteral {
                 assert_eq!(quasis.len(), exprs.len() + 1);
 
                 // TODO: Optimize
+                println!("tpl");
 
                 // This makes result of addition string
                 let mut obj: Box<Expr> = Box::new(
