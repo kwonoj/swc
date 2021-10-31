@@ -529,6 +529,13 @@ impl<'a, I: Tokens> Parser<I> {
                 }
 
                 _ => match *expr {
+                    Expr::Paren(ref expr_paren) if self.input.syntax().typescript() => {
+                        if let Expr::TsAs(as_expr) = *expr_paren.clone().expr {
+                            return self.reparse_expr_as_pat_inner(pat_ty, as_expr.expr);
+                        } else {
+                            return Ok(Pat::Expr(expr));
+                        }
+                    }
                     // It is a Syntax Error if the LeftHandSideExpression is
                     // CoverParenthesizedExpressionAndArrowParameterList:(Expression) and
                     // Expression derives a phrase that would produce a Syntax Error according
