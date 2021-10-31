@@ -20,12 +20,17 @@ Object.defineProperty(exports, "X2", {
         return _z.X2;
     }
 });
-var _exportNames = {
-    X: true,
-    Y: true,
-    X2: true
-};
 var _z = _interopRequireWildcard(require("./Z"));
+Object.keys(_z).forEach(function(key) {
+    if (key === "default" || key === "__esModule") return;
+    if (key in exports && exports[key] === _z[key]) return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function() {
+            return _z[key];
+        }
+    });
+});
 function _interopRequireWildcard(obj) {
     if (obj && obj.__esModule) {
         return obj;
@@ -49,14 +54,3 @@ function _interopRequireWildcard(obj) {
         return newObj;
     }
 }
-Object.keys(_z).forEach(function(key) {
-    if (key === "default" || key === "__esModule") return;
-    if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-    if (key in exports && exports[key] === _z[key]) return;
-    Object.defineProperty(exports, key, {
-        enumerable: true,
-        get: function() {
-            return _z[key];
-        }
-    });
-});
