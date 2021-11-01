@@ -188,7 +188,9 @@ where
                             let mut scope_ref_mut = self.scope.borrow_mut();
                             let scope = &mut *scope_ref_mut;
 
-                            if exported_names.is_none() && export_alls.len() >= 1 {
+                            if exported_names.is_none()
+                                && (export_alls.len() >= 1 || !exports.is_empty())
+                            {
                                 let exported_names_ident = private_ident!("_exportNames");
                                 stmts.push(ModuleItem::Stmt(Stmt::Decl(Decl::Var(VarDecl {
                                     span: DUMMY_SP,
