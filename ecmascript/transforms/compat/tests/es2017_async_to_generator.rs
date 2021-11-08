@@ -2883,6 +2883,84 @@ myclass.handle();
   "
 );
 
+test!(
+    Syntax::default(),
+    |_| {
+        let top_level_mark = Mark::fresh(Mark::root());
+        chain!(
+            async_to_generator(),
+            regenerator(Default::default(), top_level_mark)
+        )
+    },
+    issue_2677,
+    "
+async function region() {
+}
+
+export async function otherCall() {
+  await region();
+}
+
+export default async function someCall() {
+  await region();
+}
+  ",
+    "
+            var regeneratorRuntime = require('regenerator-runtime');
+function _region() {
+    _region = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_ctx) {
+            while(1)switch(_ctx.prev = _ctx.next){
+                case 0:
+                case 'end':
+                    return _ctx.stop();
+            }
+        }, _callee);
+    }));
+    return _region.apply(this, arguments);
+}
+function region() {
+    return _region.apply(this, arguments);
+}
+function _otherCall() {
+    _otherCall = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_ctx) {
+            while(1)switch(_ctx.prev = _ctx.next){
+                case 0:
+                    _ctx.next = 2;
+                    return region();
+                case 2:
+                case 'end':
+                    return _ctx.stop();
+            }
+        }, _callee);
+    }));
+    return _otherCall.apply(this, arguments);
+}
+export function otherCall() {
+    return _otherCall.apply(this, arguments);
+}
+var _someCall = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+    return regeneratorRuntime.wrap(function _callee$(_ctx) {
+        while(1)switch(_ctx.prev = _ctx.next){
+            case 0:
+                _ctx.next = 2;
+                return region();
+            case 2:
+            case 'end':
+                return _ctx.stop();
+        }
+    }, _callee);
+}));
+export default function someCall() {
+    function someCall() {
+        return _someCall.apply(this, arguments);
+    }
+    return someCall;
+}
+  "
+);
+
 #[testing::fixture("tests/fixture/async-to-generator/**/exec.js")]
 fn exec(input: PathBuf) {
     let input = read_to_string(&input).unwrap();
