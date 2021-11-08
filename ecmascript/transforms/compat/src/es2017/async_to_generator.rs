@@ -362,6 +362,51 @@ impl Fold for Actual {
         }
     }
 
+    /*fn fold_fn_expr(&mut self, f: FnExpr) -> FnExpr {
+        let f = f.fold_children_with(self);
+        if !f.function.is_async {
+            return f;
+        }
+
+        println!("{:#?}", f);
+
+        let function = self.fold_fn(f.ident.clone(), f.function, false);
+        FnExpr {
+            ident: f.ident,
+            function,
+        }
+    }*/
+
+    fn fold_module_item(&mut self, item: ModuleItem) -> ModuleItem {
+        let item = match item {
+            // if fn is ExportDefaultDecl, fn is not FnDecl but FnExpr
+            ModuleItem::ModuleDecl(ModuleDecl::ExportDefaultDecl(export_default)) => {
+                if let DefaultDecl::Fn(fn_expr) = export_default.decl {
+                    let expr = fn_expr.fold_children_with(self);
+                    let expr = if !expr.function.is_async {
+                        expr
+                    } else {
+                        let function = self.fold_fn(expr.ident.clone(), expr.function, false);
+                        FnExpr {
+                            ident: expr.ident,
+                            function,
+                        }
+                    };
+
+                    ModuleItem::ModuleDecl(ModuleDecl::ExportDefaultDecl(ExportDefaultDecl {
+                        decl: expr.into(),
+                        ..export_default
+                    }))
+                } else {
+                    ModuleItem::ModuleDecl(ModuleDecl::ExportDefaultDecl(export_default))
+                }
+            }
+            _ => item,
+        };
+
+        item.fold_children_with(self)
+    }
+
     fn fold_method_prop(&mut self, prop: MethodProp) -> MethodProp {
         let prop = prop.fold_children_with(self);
 
