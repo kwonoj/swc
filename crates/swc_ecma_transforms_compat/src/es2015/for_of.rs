@@ -70,6 +70,8 @@ struct ForOf {
 }
 
 impl ForOf {
+    fn visit_mut_for_stmt(&mut self) {}
+
     fn fold_for_stmt(
         &mut self,
         label: Option<Ident>,
