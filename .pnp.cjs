@@ -62,6 +62,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "virtual:8467f8eb25bdead0542da47daf67f258ea9cb81c3febd4ea769e2c3d5f6632811b9865c1e275e5e650dad671eb11a3af8838b56e784cd49db444d049e7e2031d#npm:27.0.6"],
             ["lodash", "npm:4.17.21"],
             ["mocha", "npm:9.1.3"],
+            ["pinst", "npm:2.1.6"],
             ["progress", "npm:2.0.3"],
             ["prop-types", "npm:15.7.2"],
             ["react", "npm:17.0.2"],
@@ -3660,6 +3661,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "virtual:8467f8eb25bdead0542da47daf67f258ea9cb81c3febd4ea769e2c3d5f6632811b9865c1e275e5e650dad671eb11a3af8838b56e784cd49db444d049e7e2031d#npm:27.0.6"],
             ["lodash", "npm:4.17.21"],
             ["mocha", "npm:9.1.3"],
+            ["pinst", "npm:2.1.6"],
             ["progress", "npm:2.0.3"],
             ["prop-types", "npm:15.7.2"],
             ["react", "npm:17.0.2"],
@@ -5715,6 +5717,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["asynckit", "npm:0.4.0"],
             ["combined-stream", "npm:1.0.8"],
             ["mime-types", "npm:2.1.32"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["fromentries", [
+        ["npm:1.3.2", {
+          "packageLocation": "./.yarn/cache/fromentries-npm-1.3.2-f5392090b8-33729c529c.zip/node_modules/fromentries/",
+          "packageDependencies": [
+            ["fromentries", "npm:1.3.2"]
           ],
           "linkType": "HARD",
         }]
@@ -8058,6 +8069,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/picomatch-npm-2.3.0-5e60e6c82d-16818720ea.zip/node_modules/picomatch/",
           "packageDependencies": [
             ["picomatch", "npm:2.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["pinst", [
+        ["npm:2.1.6", {
+          "packageLocation": "./.yarn/cache/pinst-npm-2.1.6-750cbdedeb-3644c352a7.zip/node_modules/pinst/",
+          "packageDependencies": [
+            ["pinst", "npm:2.1.6"],
+            ["fromentries", "npm:1.3.2"]
           ],
           "linkType": "HARD",
         }]
