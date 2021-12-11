@@ -8,13 +8,11 @@ use std::{
     fmt::{Debug, Display, Formatter},
     fs::{create_dir_all, File},
     io::Write,
-    path::{Path, PathBuf},
+    path::Path,
     str::FromStr,
-    sync::RwLock,
     thread,
 };
 use swc_common::{
-    collections::AHashMap,
     errors::{Diagnostic, Handler},
     sync::Lrc,
     FilePathMapping, SourceMap,
@@ -45,37 +43,6 @@ pub fn init() -> tracing::subscriber::DefaultGuard {
         .finish();
 
     tracing::subscriber::set_default(logger)
-}
-
-pub fn find_executable(name: &str) -> Option<PathBuf> {
-    static CACHE: Lazy<RwLock<AHashMap<String, PathBuf>>> = Lazy::new(|| Default::default());
-
-    {
-        let locked = CACHE.read().unwrap();
-        if let Some(cached) = locked.get(name) {
-            return Some(cached.clone());
-        }
-    }
-
-    let path = env::var_os("PATH").and_then(|paths| {
-        env::split_paths(&paths)
-            .filter_map(|dir| {
-                let full_path = dir.join(&name);
-                if full_path.is_file() {
-                    Some(full_path)
-                } else {
-                    None
-                }
-            })
-            .next()
-    });
-
-    if let Some(path) = path.clone() {
-        let mut locked = CACHE.write().unwrap();
-        locked.insert(name.to_string(), path);
-    }
-
-    path
 }
 
 /// Run test and print errors.

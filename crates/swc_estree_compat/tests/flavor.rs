@@ -41,8 +41,12 @@ fn assert_flavor(flavor: Flavor, input: &Path, output_json_path: &Path) {
 
         println!("----- swc output -----\n{}", actual_str);
         let output = {
+            let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+            yarn_pnp_path.push(".pnp.cjs");
             let mut cmd = Command::new("node");
-            cmd.arg("-e")
+            cmd.arg("-r")
+                .arg(yarn_pnp_path)
+                .arg("-e")
                 .arg(include_str!("../scripts/test-acorn.js"))
                 .arg(&*fm.src)
                 .stderr(Stdio::inherit());

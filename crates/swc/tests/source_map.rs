@@ -46,7 +46,12 @@ fn file(f: &str) -> Result<(), StdErr> {
         let map_path = path.parent().unwrap().join("index.js.map");
         std::fs::write(&map_path, s.map.unwrap().as_bytes()).unwrap();
 
+        let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+        yarn_pnp_path.push(".pnp.cjs");
+
         let output = Command::new("node")
+            .arg("-r")
+            .arg(yarn_pnp_path)
             .arg("-e")
             .arg(include_str!("source_map.js"))
             .arg(js_path)
@@ -98,7 +103,12 @@ fn inline(f: &str) -> Result<(), StdErr> {
         let js_path = path.parent().unwrap().join("index.g.js");
         std::fs::write(&js_path, s.code.as_bytes()).unwrap();
 
+        let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+        yarn_pnp_path.push(".pnp.cjs");
+
         let output = Command::new("node")
+            .arg("-r")
+            .arg(yarn_pnp_path)
             .arg("-e")
             .arg(include_str!("source_map_inline.js"))
             .arg(js_path)
@@ -192,7 +202,12 @@ fn node_stack_trace(code: &str) -> Result<NormalizedOutput, Error> {
     let test_file = dir.join("eval.js");
     fs::write(&test_file, code.as_bytes()).context("faailed to write to test js")?;
 
+    let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+    yarn_pnp_path.push(".pnp.cjs");
+
     let stack = Command::new("node")
+        .arg("-r")
+        .arg(yarn_pnp_path)
         .arg("--enable-source-maps")
         .arg(&test_file)
         .output()

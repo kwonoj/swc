@@ -1,5 +1,5 @@
 use once_cell::sync::Lazy;
-use std::{env, process::Command};
+use std::{env, path::PathBuf, process::Command};
 use swc_common::{sync::Lrc, SourceMap, SyntaxContext};
 use swc_ecma_ast::*;
 use swc_ecma_codegen::{text_writer::JsWriter, Emitter};
@@ -103,7 +103,12 @@ pub(crate) fn invoke(module: &Module) {
 
     let code = String::from_utf8(buf).unwrap();
 
+    let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+    yarn_pnp_path.push(".pnp.cjs");
+
     let output = Command::new("node")
+        .arg("-r")
+        .arg(yarn_pnp_path)
         .arg("-e")
         .arg(&code)
         .output()

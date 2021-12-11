@@ -130,7 +130,12 @@ fn run(
 }
 
 fn stdout_of(code: &str) -> Result<String, Error> {
+    let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+    yarn_pnp_path.push(".pnp.cjs");
+
     let actual_output = Command::new("node")
+        .arg("-r")
+        .arg(yarn_pnp_path)
         .arg("-e")
         .arg(&code)
         .output()

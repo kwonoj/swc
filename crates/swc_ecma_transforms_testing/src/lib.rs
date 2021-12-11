@@ -31,7 +31,7 @@ use swc_ecma_transforms_base::{
 use swc_ecma_utils::{quote_ident, quote_str, DropSpan, ExprFactory};
 use swc_ecma_visit::{as_folder, noop_visit_mut_type, Fold, FoldWith, VisitMut, VisitMutWith};
 use tempfile::tempdir_in;
-use testing::{assert_eq, find_executable, NormalizedOutput};
+use testing::{assert_eq, NormalizedOutput};
 
 pub struct Tester<'a> {
     pub cm: Lrc<SourceMap>,
@@ -494,14 +494,17 @@ fn exec_with_node_test_runner(test_name: &str, src: &str) -> Result<(), ()> {
     write!(tmp, "{}", src).expect("failed to write to temp file");
     tmp.flush().unwrap();
 
-    let test_runner_path = find_executable("mocha").expect("failed to find `mocha` from path");
-
+    // since pnp doesn't provide physical path to binaries use yarn as resolver to
+    // jest. we assume machine have access to yarn by default, either via
+    // corepack or global install.
     let mut base_cmd = if cfg!(target_os = "windows") {
         let mut c = Command::new("cmd");
-        c.arg("/C").arg(&test_runner_path);
+        c.arg("/C").arg("yarn").arg("mocha");
         c
     } else {
-        Command::new(&test_runner_path)
+        let mut c = Command::new("yarn");
+        c.arg("mocha");
+        c
     };
 
     let status = base_cmd
@@ -514,11 +517,16 @@ fn exec_with_node_test_runner(test_name: &str, src: &str) -> Result<(), ()> {
         return Ok(());
     }
     ::std::mem::forget(tmp_dir);
-    panic!("Execution failed")
+    panic!("Execution failed {}", status);
 }
 
 fn stdout_of(code: &str) -> Result<String, Error> {
+    let mut yarn_pnp_path = PathBuf::from(env!("CARGO_WORKSPACE_DIR"));
+    yarn_pnp_path.push(".pnp.cjs");
+
     let actual_output = Command::new("node")
+        .arg("-r")
+        .arg(yarn_pnp_path)
         .arg("-e")
         .arg(&code)
         .output()
