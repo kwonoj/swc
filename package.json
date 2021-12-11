@@ -58,7 +58,7 @@
         "build": "tsc -d && napi build --platform --release --cargo-name node --cargo-flags=\"-p node\"",
         "build:dev": "tsc -d && napi build --platform --cargo-name node --cargo-flags=\"-p node\"",
         "build:ts": "tsc -d",
-        "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest node-swc/__tests__",
+        "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' yarn run jest node-swc/__tests__",
         "version": "napi version -p scripts/npm"
     },
     "devDependencies": {
