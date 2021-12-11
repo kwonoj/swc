@@ -219,17 +219,6 @@ jobs:
         shell: bash
         run: |
           corepack enable
-          # This does not have any effect on windows.
-          npm config set prefix $HOME/npm
-          yarn
-          echo $HOME
-          echo $HOME/npm/bin >> $GITHUB_PATH
-
-      - name: Configure path (windows)
-        shell: bash
-        if: runner.os == 'Windows'
-        run: |
-          echo 'C:\\npm\\prefix' >> $GITHUB_PATH
 
       - name: Cache
         uses: actions/cache@v2

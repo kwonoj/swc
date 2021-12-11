@@ -23,7 +23,6 @@ jobs:
 
       - name: Build (release)
         run: |
-          yarn
           yarn build
 
       - name: Print binary size

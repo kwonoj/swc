@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Cache
         uses: actions/cache@v2
@@ -38,12 +38,10 @@ jobs:
 
       - name: Prepare
         run: |
-          npm config set prefix ~/npm
-          npm i
-          export PATH="$PATH:$HOME/npm/bin"
+          corepack enable
 
-          npm run build:dev
-          npm test
+          yarn run build:dev
+          yarn test
 
   integration-test:
     name: swc-cli
@@ -53,7 +51,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Cache
         uses: actions/cache@v2
@@ -71,13 +69,9 @@ jobs:
 
       - name: Prepare
         run: |
-          npm config set prefix ~/npm
-          npm i
-          export PATH="$PATH:$HOME/npm/bin"
+          corepack enable
 
-          npm run build:dev
-          npm i -g @swc/cli@0.1.33
-          npm link
+          yarn run build:dev
 
       - name: (swc) three.js
         run: |
@@ -88,7 +82,7 @@ jobs:
           # Download three.js
           git clone --depth 1 https://github.com/mrdoob/three.js.git -b r117 tests/integration/three-js/repo
 
-          swc --sync tests/integration/three-js/repo/ -d tests/integration/three-js/build/
+          yarn dlx -p @swc/core -p @swc/cli swc --sync tests/integration/three-js/repo/ -d tests/integration/three-js/build/
           # swc tests/integration/three-js/repo/src/ -d tests/integration/three-js/repo/build/
           # swc tests/integration/three-js/repo/test/unit/**/*.js -d tests/integration/three-js/repo/test/unit/build/
 
@@ -105,10 +99,10 @@ jobs:
 
           # Download
           git clone --depth 1 https://github.com/reduxjs/redux.git -b v4.1.0 tests/integration/redux/repo
-          swc --sync tests/integration/redux/repo/src/ -d tests/integration/redux/repo/lib/
+          yarn dlx -p @swc/core -p @swc/cli swc --sync tests/integration/redux/repo/src/ -d tests/integration/redux/repo/lib/
           echo "module.exports=require('./index')" > tests/integration/redux/repo/lib/redux.js
-          swc --sync tests/integration/redux/repo/src/ -d tests/integration/redux/repo/test/
-          swc --sync tests/integration/redux/repo/test/ -d tests/integration/redux/repo/test/
+          yarn dlx -p @swc/core -p @swc/cli swc --sync tests/integration/redux/repo/src/ -d tests/integration/redux/repo/test/
+          yarn dlx -p @swc/core -p @swc/cli swc --sync tests/integration/redux/repo/test/ -d tests/integration/redux/repo/test/
 
           (cd tests/integration/redux/repo && npm i)
           (cd tests/integration/redux/repo && npx jest '.*.js' --modulePathIgnorePatterns 'typescript')
