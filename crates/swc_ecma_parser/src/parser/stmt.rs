@@ -2162,4 +2162,14 @@ export default function waitUntil(callback, options = {}) {
             |p| p.parse_expr(),
         );
     }
+
+    #[test]
+    #[should_panic(expected = "Only one default export allowed per module.")]
+    fn no_duplicate_default_export() {
+        let src = "
+            export default function a() {};
+            export default function b() {};
+            ";
+        test_parser(src, Syntax::Es(Default::default()), |p| p.parse_module());
+    }
 }
