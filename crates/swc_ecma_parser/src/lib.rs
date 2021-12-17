@@ -364,6 +364,8 @@ pub struct Context {
 
     /// If true, `:` should not be treated as a type annotation.
     dont_parse_colon_as_type_ann: bool,
+
+    default_export_declared: bool,
 }
 
 #[cfg(test)]

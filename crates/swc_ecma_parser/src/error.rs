@@ -166,6 +166,7 @@ pub enum SyntaxError {
     TrailingCommaInsideImport,
 
     ExportDefaultWithOutFrom,
+    DuplicateDefaultExport,
 
     DotsWithoutIdentifier,
 
@@ -414,6 +415,10 @@ impl SyntaxError {
 
             SyntaxError::ExportDefaultWithOutFrom => {
                 "export default statements required from '...';".into()
+            }
+
+            SyntaxError::DuplicateDefaultExport => {
+                "Only one default export allowed per module.".into()
             }
 
             SyntaxError::DotsWithoutIdentifier => {

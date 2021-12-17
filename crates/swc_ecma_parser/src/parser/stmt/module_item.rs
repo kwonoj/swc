@@ -456,19 +456,36 @@ impl<'a, I: Tokens> Parser<I> {
                 }
             }
 
+            let validate_default_export_unity = |p: &mut Parser<I>, start: BytePos| -> PResult<_> {
+                if p.ctx().default_export_declared {
+                    syntax_error!(self, span!(p, start), SyntaxError::DuplicateDefaultExport);
+                }
+
+                let ctx = Context {
+                    default_export_declared: true,
+                    ..p.ctx()
+                };
+                p.set_ctx(ctx);
+                Ok(())
+            };
+
             if is!(self, "class") {
                 let class_start = cur_pos!(self);
                 let decl = self.parse_default_class(start, class_start, decorators)?;
-                return Ok(ModuleDecl::ExportDefaultDecl(decl));
+                return validate_default_export_unity(self, start)
+                    .map(|_| ModuleDecl::ExportDefaultDecl(decl));
             } else if is!(self, "async")
                 && peeked_is!(self, "function")
                 && !self.input.has_linebreak_between_cur_and_peeked()
             {
                 let decl = self.parse_default_async_fn(start, decorators)?;
-                return Ok(ModuleDecl::ExportDefaultDecl(decl));
+
+                return validate_default_export_unity(self, start)
+                    .map(|_| ModuleDecl::ExportDefaultDecl(decl));
             } else if is!(self, "function") {
                 let decl = self.parse_default_fn(start, decorators)?;
-                return Ok(ModuleDecl::ExportDefaultDecl(decl));
+                return validate_default_export_unity(self, start)
+                    .map(|_| ModuleDecl::ExportDefaultDecl(decl));
             } else if self.input.syntax().export_default_from()
                 && (is!(self, "from") || (is!(self, ',') && peeked_is!(self, '{')))
             {
@@ -476,10 +493,12 @@ impl<'a, I: Tokens> Parser<I> {
             } else {
                 let expr = self.include_in_expr(true).parse_assignment_expr()?;
                 expect!(self, ';');
-                return Ok(ModuleDecl::ExportDefaultExpr(ExportDefaultExpr {
-                    span: span!(self, start),
-                    expr,
-                }));
+                return validate_default_export_unity(self, start).map(|_| {
+                    ModuleDecl::ExportDefaultExpr(ExportDefaultExpr {
+                        span: span!(self, start),
+                        expr,
+                    })
+                });
             }
         }
 
