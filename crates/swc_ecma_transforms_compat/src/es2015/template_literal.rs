@@ -47,8 +47,6 @@ impl VisitMut for TemplateLiteral {
     noop_visit_mut_type!();
 
     fn visit_mut_expr(&mut self, e: &mut Expr) {
-        e.visit_mut_children_with(self);
-
         match e {
             Expr::Tpl(Tpl {
                 span,
@@ -407,7 +405,9 @@ impl VisitMut for TemplateLiteral {
                 })
             }
 
-            _ => {}
+            _ => {
+                e.visit_mut_children_with(self);
+            }
         }
     }
 
