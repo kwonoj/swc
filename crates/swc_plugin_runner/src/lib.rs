@@ -7,9 +7,10 @@ use anyhow::{Context, Error};
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use resolve::PluginCache;
+use rkyv::{AlignedVec, Deserialize};
 use swc_common::{collections::AHashMap, plugin::serialize_for_plugin};
 use swc_ecma_ast::Program;
-use wasmer::{imports, Instance, Memory, MemoryType, Module, Store};
+use wasmer::{imports, Array, Instance, Memory, MemoryType, Module, Store, WasmPtr};
 use wasmer_cache::{Cache, Hash};
 
 pub mod resolve;
@@ -148,9 +149,31 @@ pub fn apply_js_plugin(
             .get_native_function::<(i32, u32), i32>("process")?;
 
         let (alloc_ptr, len) = copy_memory_to_instance(&instance, &program)?;
-        plugin_process.call(alloc_ptr, len)?;
+        println!("{:#?} {:#?}", alloc_ptr, len);
+        let returned_ptr = plugin_process.call(alloc_ptr, len)?;
 
-        Ok(program)
+        let memory = instance.exports.get_memory("memory")?;
+        let view = memory.view::<u8>();
+
+        let ptr: WasmPtr<u8, Array> = WasmPtr::new(returned_ptr as _);
+
+        let ptrsize: usize = returned_ptr.try_into().unwrap();
+        let l: usize = len.try_into().unwrap();
+        let mut vec = AlignedVec::with_capacity(l);
+
+        let d = ptr.deref(memory, 0, len).unwrap();
+        for i in 0..l {
+            let x = d[i].get();
+            vec.push(x);
+        }
+
+        //println!("{:#?} {:#?}", out_ptr, returned_len);
+        //panic!("s");
+
+        let archived = unsafe { rkyv::archived_root::<Program>(&vec[..]) };
+        let v: Program = archived.deserialize(&mut rkyv::Infallible).unwrap();
+
+        Ok(v)
     })()
     .with_context(|| {
         format!(

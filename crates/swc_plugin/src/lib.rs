@@ -1,7 +1,11 @@
 // Reexports
-pub use swc_common::chain;
+pub use swc_atoms::JsWord;
+pub use swc_common::{chain, DUMMY_SP};
 pub use swc_ecma_ast::*;
 pub use swc_ecma_visit::*;
+
+#[cfg(feature = "plugin-base")]
+pub use swc_common::serialize_for_plugin;
 
 #[doc(hidden)]
 #[cfg(target_arch = "wasm32")]

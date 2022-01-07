@@ -64,6 +64,8 @@ fn internal() -> Result<(), Error> {
             swc_plugin_runner::apply_js_plugin("internal-test", &path, &mut None, "{}", program)
                 .unwrap();
 
+        println!("{:#?}", _program);
+        panic!("s");
         Ok(())
     })
     .unwrap();
