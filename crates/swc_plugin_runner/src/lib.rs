@@ -146,11 +146,11 @@ pub fn apply_js_plugin(
 
         let plugin_process = instance
             .exports
-            .get_native_function::<(i32, u32), i32>("process")?;
+            .get_native_function::<(i32, u32), (i32, i32)>("process")?;
 
         let (alloc_ptr, len) = copy_memory_to_instance(&instance, &program)?;
         println!("{:#?} {:#?}", alloc_ptr, len);
-        let returned_ptr = plugin_process.call(alloc_ptr, len)?;
+        let (returned_ptr, returned_len) = plugin_process.call(alloc_ptr, len)?;
 
         let memory = instance.exports.get_memory("memory")?;
         let view = memory.view::<u8>();
@@ -158,7 +158,7 @@ pub fn apply_js_plugin(
         let ptr: WasmPtr<u8, Array> = WasmPtr::new(returned_ptr as _);
 
         let ptrsize: usize = returned_ptr.try_into().unwrap();
-        let l: usize = len.try_into().unwrap();
+        let l: usize = returned_len.try_into().unwrap();
         let mut vec = AlignedVec::with_capacity(l);
 
         let d = ptr.deref(memory, 0, len).unwrap();
