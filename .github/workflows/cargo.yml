@@ -246,6 +246,10 @@ jobs:
             os: ubuntu-latest
 
     steps:
+      - name: Install required tools
+        run: |
+          cargo install cargo-nextest
+
       - name: Handle line endings
         shell: bash
         if: runner.os == 'Windows'
@@ -310,17 +314,17 @@ jobs:
       - name: Run cargo test
         run: |
           jest -v && mocha --version
-          cargo test --color always -p ${{ matrix.settings.crate }}
+          cargo nextest run -p ${{ matrix.settings.crate }}
 
       - name: Run cargo test (swc_ecma_parser)
         if: matrix.settings.crate == 'swc_ecma_parser'
         run: |
-          cargo test --color always -p swc_ecma_parser --features verify
+          cargo nextest run -p swc_ecma_parser --features verify
 
       - name: Run cargo test (swc_ecma_transforms)
         if: matrix.settings.crate == 'swc_ecma_transforms'
         run: |
-          cargo test --color always -p swc_ecma_transforms --all-features
+          cargo nextest run -p swc_ecma_transforms --all-features
 
       - name: Run cargo test (concurrent)
         if: runner.os != 'Windows'
@@ -332,4 +336,4 @@ jobs:
         shell: bash
         if: matrix.settings.crate == 'swc' && runner.os != 'Windows'
         run: |
-          cargo test --color always -p swc --features concurrent
+          cargo nextest run -p swc --features concurrent
