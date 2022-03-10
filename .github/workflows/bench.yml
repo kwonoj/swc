@@ -1,7 +1,6 @@
 name: Benchmark
 
 on:
-  - push
   - pull_request
 
 jobs:
@@ -35,7 +34,7 @@ jobs:
     name: Performance regression check
     if: >-
       ${{ !contains(github.event.head_commit.message, 'chore: ') }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, ARM64]
     steps:
       - uses: actions/checkout@v2
 
