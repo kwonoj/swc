@@ -139,8 +139,9 @@ fn handle_func(func: ItemFn) -> TokenStream {
                 return construct_error_ptr(err);
             }
 
+            let mut plugin_comments = swc_plugin::PluginComments;
             // Take original plugin fn ident, then call it with interop'ed args
-            let transformed_program = #ident(program, config, context);
+            let transformed_program = #ident(program, plugin_comments, config, context);
 
             // Serialize transformed result, return back to the host.
             let serialized_result = swc_plugin::Serialized::serialize(&transformed_program);

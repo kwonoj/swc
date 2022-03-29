@@ -1,4 +1,7 @@
-use swc_plugin::{ast::*, errors::HANDLER, plugin_transform, syntax_pos::DUMMY_SP};
+use serde::Deserialize;
+use swc_plugin::{
+    ast::*, errors::HANDLER, plugin_transform, syntax_pos::DUMMY_SP, Comments, PluginComments,
+};
 
 struct ConsoleOutputReplacer;
 
@@ -22,6 +25,11 @@ impl VisitMut for ConsoleOutputReplacer {
     }
 }
 
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct Options {
+    debug: bool,
+}
+
 /// An example plugin function with macro support.
 /// `plugin_transform` macro interop pointers into deserialized structs, as well
 /// as returning ptr back to host.
@@ -42,12 +50,36 @@ impl VisitMut for ConsoleOutputReplacer {
 /// important steps manually need to be performed like sending transformed
 /// results back to host. Refer swc_plugin_macro how does it work internally.
 #[plugin_transform]
-pub fn process(program: Program, _plugin_config: String, _context: String) -> Program {
-    HANDLER.with(|handler| {
+pub fn process(
+    program: Program,
+    comments: PluginComments,
+    _plugin_config: String,
+    _context: String,
+) -> Program {
+    /*HANDLER.with(|handler| {
         handler
             .struct_span_err(DUMMY_SP, "Test diagnostics from plugin")
             .emit();
-    });
+    });*/
+
+    let mut deserializer = serde_json::Deserializer::from_str(&_plugin_config);
+    let opt = Options::deserialize(&mut deserializer).unwrap();
+
+    if opt.debug {
+        println!("{:#?}", program);
+    }
+
+    if let Program::Module(p) = &program {
+        let b = comments.get_leading(p.span.lo);
+
+        println!("{:#?}", b);
+
+        HANDLER.with(|handler| {
+            handler
+                .struct_span_err(DUMMY_SP, "Test diagnostics from plugin")
+                .emit();
+        });
+    }
 
     program.fold_with(&mut as_folder(ConsoleOutputReplacer))
 }

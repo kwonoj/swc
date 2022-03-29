@@ -2,13 +2,14 @@ use std::sync::Arc;
 
 use anyhow::{Context, Error};
 use parking_lot::Mutex;
-use wasmer::{imports, ChainableNamedResolver, Function, Instance, LazyInit};
+use wasmer::{imports, ChainableNamedResolver, Function, HostEnvInitError, Instance, LazyInit};
 use wasmer_wasi::{is_wasi_module, WasiState};
 
 use crate::{
     context::HostEnvironment,
     imported_fn::{
-        emit_diagnostics, mark_fresh_proxy, mark_is_builtin_proxy, mark_is_descendant_of_proxy,
+        emit_diagnostics, get_leading_comment_len_proxy, get_leading_comment_proxy,
+        mark_fresh_proxy, mark_is_builtin_proxy, mark_is_descendant_of_proxy,
         mark_least_ancestor_proxy, mark_parent_proxy, mark_set_builtin_proxy, set_transform_result,
         syntax_context_apply_mark_proxy, syntax_context_outer_proxy,
         syntax_context_remove_mark_proxy,
@@ -80,6 +81,18 @@ pub fn load_plugin(
             let syntax_context_outer_fn_decl =
                 Function::new_native(wasmer_store, syntax_context_outer_proxy);
 
+            let get_leading_comment_len_fn_decl =
+                Function::new_native(wasmer_store, get_leading_comment_len_proxy);
+
+            let get_leading_comment_proxy_fn_decl = Function::new_native_with_env(
+                wasmer_store,
+                HostEnvironment {
+                    memory: LazyInit::default(),
+                    transform_result: transform_result.clone(),
+                },
+                get_leading_comment_proxy,
+            );
+
             let import_object = imports! {
                 "env" => {
                     "__set_transform_result" => set_transform_result_fn_decl,
@@ -92,7 +105,9 @@ pub fn load_plugin(
                     "__mark_least_ancestor" => mark_least_ancestor_fn_decl,
                     "__syntax_context_apply_mark_proxy" => syntax_context_apply_mark_fn_decl,
                     "__syntax_context_remove_mark_proxy" => syntax_context_remove_mark_fn_decl,
-                    "__syntax_context_outer_proxy" => syntax_context_outer_fn_decl
+                    "__syntax_context_outer_proxy" => syntax_context_outer_fn_decl,
+                    "__get_leading_comment_len_proxy" => get_leading_comment_len_fn_decl,
+                    "__get_leading_comment_proxy" => get_leading_comment_proxy_fn_decl
                 }
             };
 

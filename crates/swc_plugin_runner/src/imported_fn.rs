@@ -4,11 +4,13 @@
 //! appropriate host fn as needed.
 
 use swc_common::{
+    comments::Comments,
     errors::{Diagnostic, HANDLER},
     hygiene::MutableMarkContext,
     plugin::Serialized,
-    Mark, SyntaxContext,
+    BytePos, Mark, SyntaxContext,
 };
+use swc_plugin_comments::{PluginStorage, COMMENTS};
 
 use crate::{
     context::HostEnvironment,
@@ -129,4 +131,61 @@ pub fn syntax_context_remove_mark_proxy(env: &HostEnvironment, self_mark: u32, a
 
 pub fn syntax_context_outer_proxy(self_mark: u32) -> u32 {
     SyntaxContext::from_u32(self_mark).outer().as_u32()
+}
+
+// Since get_leading_comment returns non-deterministic Option<Vec<Comment>>,
+// guest cannot pre-allocated its memory. We have to call this first to get the
+// size to allocate.
+pub fn get_leading_comment_len_proxy(byte_pos: u32) -> u32 {
+    if COMMENTS.is_set() {
+        return COMMENTS.with(|storage: PluginStorage| {
+            if let Some(comments) = storage.inner {
+                let x = comments.get_leading(BytePos(byte_pos)).map_or(0, |v| {
+                    Serialized::serialize(&v)
+                        .expect("Should be serializable")
+                        .as_ref()
+                        .len()
+                        .try_into()
+                        .expect("")
+                });
+                x
+            } else {
+                0
+            }
+        });
+    }
+    0
+}
+
+pub fn get_leading_comment_proxy(
+    env: &HostEnvironment,
+    byte_pos: u32,
+    vec_allocated_ptr: i32,
+    vec_allocated_len: i32,
+) {
+    if let Some(memory) = env.memory_ref() {
+        if COMMENTS.is_set() {
+            COMMENTS.with(|storage: PluginStorage| {
+                if let Some(comments) = storage.inner {
+                    let byte_pos = BytePos(byte_pos);
+                    let value = comments.get_leading(byte_pos);
+
+                    if let Some(value) = value {
+                        let serialized_comment_vec_bytes =
+                            Serialized::serialize(&value).expect("Should be serializable");
+
+                        println!(
+                            " serialized {:#?} {:#?}",
+                            serialized_comment_vec_bytes.as_ref().len(),
+                            vec_allocated_len
+                        );
+                        write_into_memory_view(memory, &serialized_comment_vec_bytes, |_| {
+                            vec_allocated_ptr
+                        });
+                        println!("write done");
+                    }
+                }
+            });
+        }
+    }
 }

@@ -4,6 +4,7 @@
 #![cfg_attr(any(not(feature = "plugin"), target_arch = "wasm32"), allow(unused))]
 
 use serde::{Deserialize, Serialize};
+use swc_common::comments::SingleThreadedComments;
 #[cfg(feature = "plugin")]
 use swc_ecma_ast::*;
 use swc_ecma_loader::resolvers::{lru::CachingResolver, node::NodeModulesResolver};
@@ -42,14 +43,16 @@ pub struct PluginContext {
 }
 
 #[cfg(feature = "plugin")]
-pub fn plugins(
+pub fn plugins<'cmt>(
     resolver: Option<CachingResolver<NodeModulesResolver>>,
+    comments: Option<&'cmt SingleThreadedComments>,
     config: crate::config::JscExperimental,
     plugin_context: PluginContext,
-) -> impl Fold {
+) -> impl Fold + 'cmt {
     {
         RustPlugins {
             resolver,
+            comments,
             plugins: config.plugins,
             plugin_context,
         }
@@ -61,13 +64,14 @@ pub fn plugins() -> impl Fold {
     noop()
 }
 
-struct RustPlugins {
+struct RustPlugins<'cmt> {
     resolver: Option<CachingResolver<NodeModulesResolver>>,
+    comments: Option<&'cmt SingleThreadedComments>,
     plugins: Option<Vec<PluginConfig>>,
     plugin_context: PluginContext,
 }
 
-impl RustPlugins {
+impl<'cmt> RustPlugins<'cmt> {
     #[tracing::instrument(level = "info", skip_all, name = "apply_plugins")]
     #[cfg(all(feature = "plugin", not(target_arch = "wasm32")))]
     fn apply(&mut self, n: Program) -> Result<Program, anyhow::Error> {
@@ -126,6 +130,7 @@ impl RustPlugins {
                     &path,
                     &swc_plugin_runner::cache::PLUGIN_MODULE_CACHE,
                     serialized,
+                    self.comments,
                     config_json,
                     context_json,
                 )?;
@@ -163,6 +168,7 @@ impl RustPlugins {
                     &PathBuf::from(&p.0),
                     &swc_plugin_runner::cache::PLUGIN_MODULE_CACHE,
                     serialized,
+                    self.comments,
                     config_json,
                     context_json,
                 )?;
@@ -173,7 +179,7 @@ impl RustPlugins {
     }
 }
 
-impl Fold for RustPlugins {
+impl Fold for RustPlugins<'_> {
     noop_fold_type!();
 
     #[cfg(feature = "plugin")]

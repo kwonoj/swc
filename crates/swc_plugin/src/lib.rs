@@ -3,8 +3,10 @@
 // Reexports
 pub use swc_common::{
     chain,
+    comments::Comments,
     plugin::{PluginError, Serialized},
 };
+pub use swc_plugin_comments::PluginComments;
 
 pub mod util {
     pub use swc_common::util::take;
