@@ -29,7 +29,7 @@ pub mod ast {
 }
 
 pub mod syntax_pos {
-    pub use swc_common::{Mark, DUMMY_SP};
+    pub use swc_common::{Mark, Span, DUMMY_SP};
 }
 
 mod handler;
