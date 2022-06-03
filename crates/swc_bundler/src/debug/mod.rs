@@ -23,7 +23,7 @@ pub(crate) fn print_hygiene(event: &str, cm: &Lrc<SourceMap>, t: &Module) {
             minify: false,
             ..Default::default()
         },
-        cm: cm.clone(),
+        cm: Some(cm.clone()),
         comments: None,
         wr: Box::new(JsWriter::new(cm.clone(), "\n", &mut w, None)),
     }

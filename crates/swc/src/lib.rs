@@ -471,7 +471,7 @@ impl Compiler {
                             ascii_only,
                         },
                         comments,
-                        cm: self.cm.clone(),
+                        cm: Some(self.cm.clone()),
                         wr,
                     };
 

@@ -72,7 +72,7 @@ where
     W: WriteJs,
 {
     pub cfg: config::Config,
-    pub cm: Lrc<SourceMap>,
+    pub cm: Option<Lrc<SourceMap>>,
     pub comments: Option<&'a dyn Comments>,
     pub wr: W,
 }
@@ -2136,14 +2136,14 @@ where
             let may_emit_intervening_comments =
                 !format.intersects(ListFormat::NoInterveningComments);
             let mut should_emit_intervening_comments = may_emit_intervening_comments;
-            if self
-                .cm
-                .should_write_leading_line_terminator(parent_node, children, format)
-            {
-                if !self.cfg.minify {
-                    self.wr.write_line()?;
+
+            if let Some(cm) = &self.cm {
+                if cm.should_write_leading_line_terminator(parent_node, children, format) {
+                    if !self.cfg.minify {
+                        self.wr.write_line()?;
+                    }
+                    should_emit_intervening_comments = false;
                 }
-                should_emit_intervening_comments = false;
             } else if format.contains(ListFormat::SpaceBetweenBraces) && !self.cfg.minify {
                 self.wr.write_space()?;
             }
@@ -2179,25 +2179,27 @@ where
 
                     // Write either a line terminator or whitespace to separate the elements.
 
-                    if self.cm.should_write_separating_line_terminator(
-                        Some(previous_sibling),
-                        Some(child),
-                        format,
-                    ) {
-                        // If a synthesized node in a single-line list starts on a new
-                        // line, we should increase the indent.
-                        if (format & (ListFormat::LinesMask | ListFormat::Indented))
-                            == ListFormat::SingleLine
-                            && !self.cfg.minify
-                        {
-                            self.wr.increase_indent()?;
-                            should_decrease_indent_after_emit = true;
-                        }
+                    if let Some(cm) = &self.cm {
+                        if cm.should_write_separating_line_terminator(
+                            Some(previous_sibling),
+                            Some(child),
+                            format,
+                        ) {
+                            // If a synthesized node in a single-line list starts on a new
+                            // line, we should increase the indent.
+                            if (format & (ListFormat::LinesMask | ListFormat::Indented))
+                                == ListFormat::SingleLine
+                                && !self.cfg.minify
+                            {
+                                self.wr.increase_indent()?;
+                                should_decrease_indent_after_emit = true;
+                            }
 
-                        if !self.cfg.minify {
-                            self.wr.write_line()?;
+                            if !self.cfg.minify {
+                                self.wr.write_line()?;
+                            }
+                            should_emit_intervening_comments = false;
                         }
-                        should_emit_intervening_comments = false;
                     } else if format.contains(ListFormat::SpaceBetweenSiblings) {
                         formatting_space!(self);
                     }
@@ -2227,8 +2229,8 @@ where
             let has_trailing_comma = format.contains(ListFormat::AllowTrailingComma) && {
                 if parent_node.is_dummy() {
                     false
-                } else {
-                    match self.cm.span_to_snippet(parent_node) {
+                } else if let Some(cm) = &self.cm {
+                    match cm.span_to_snippet(parent_node) {
                         Ok(snippet) => {
                             if snippet.len() < 3 {
                                 false
@@ -2241,6 +2243,8 @@ where
                         }
                         _ => false,
                     }
+                } else {
+                    false
                 }
             };
 
@@ -2285,11 +2289,10 @@ where
             }
 
             // Write the closing line terminator or closing whitespace.
-            if self
-                .cm
-                .should_write_closing_line_terminator(parent_node, children, format)
-            {
-                if !self.cfg.minify {
+            if let Some(cm) = &self.cm {
+                if cm.should_write_closing_line_terminator(parent_node, children, format)
+                    && !self.cfg.minify
+                {
                     self.wr.write_line()?;
                 }
             } else if format.contains(ListFormat::SpaceBetweenBraces) && !self.cfg.minify {
@@ -2904,9 +2907,11 @@ where
             // treat synthesized nodes as located on the same line for emit purposes
             n.is_synthesized()
                 || n.cons[0].is_synthesized()
-                || self
-                    .cm
-                    .is_on_same_line(n.span().lo(), n.cons[0].span().lo())
+                || if let Some(cm) = &self.cm {
+                    cm.is_on_same_line(n.span().lo(), n.cons[0].span().lo())
+                } else {
+                    false
+                }
         };
 
         let mut format = ListFormat::CaseOrDefaultClauseStatements;

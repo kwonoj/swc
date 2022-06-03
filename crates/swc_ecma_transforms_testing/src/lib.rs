@@ -184,7 +184,7 @@ impl<'a> Tester<'a> {
         {
             let mut emitter = Emitter {
                 cfg: Default::default(),
-                cm: self.cm.clone(),
+                cm: Some(self.cm.clone()),
                 wr: Box::new(swc_ecma_codegen::text_writer::JsWriter::new(
                     self.cm.clone(),
                     "\n",

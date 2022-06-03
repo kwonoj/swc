@@ -50,7 +50,7 @@ fn main() {
             minify: false,
             ..Default::default()
         },
-        cm: cm.clone(),
+        cm: Some(cm.clone()),
         comments: None,
         wr: Box::new(JsWriter::new(cm, "\n", wr.lock(), None)),
     };

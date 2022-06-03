@@ -46,7 +46,7 @@ fn print_bundles(cm: Lrc<SourceMap>, modules: Vec<Bundle>, minify: bool) {
                         minify,
                         ..Default::default()
                     },
-                    cm: cm.clone(),
+                    cm: Some(cm.clone()),
                     comments: None,
                     wr: if minify {
                         Box::new(omit_trailing_semi(wr)) as Box<dyn WriteJs>

@@ -1087,7 +1087,7 @@ fn bundle(url: &str, minify: bool) -> String {
                         minify,
                         ..Default::default()
                     },
-                    cm: cm.clone(),
+                    cm: Some(cm.clone()),
                     comments: None,
                     wr,
                 }

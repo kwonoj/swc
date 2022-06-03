@@ -84,7 +84,7 @@ pub fn print_js(cm: Arc<SourceMap>, m: &Module, minify: bool) -> Result<String> 
                 minify,
                 ..Default::default()
             },
-            cm,
+            cm: Some(cm),
             comments: None,
             wr,
         };

@@ -14,7 +14,7 @@ pub(crate) fn calc_hash(cm: Lrc<SourceMap>, m: &Module) -> Result<String, Error>
     {
         let mut emitter = Emitter {
             cfg: Default::default(),
-            cm,
+            cm: Some(cm),
             comments: None,
             wr: Box::new(&mut buf) as Box<dyn WriteJs>,
         };

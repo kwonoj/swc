@@ -55,7 +55,7 @@ where
     {
         let mut emitter = Emitter {
             cfg: Default::default(),
-            cm: cm.clone(),
+            cm: Some(cm.clone()),
             comments: None,
             wr: Box::new(JsWriter::new(cm, "\n", &mut buf, None)),
         };
@@ -95,7 +95,7 @@ pub(crate) fn invoke(module: &Module) {
     {
         let mut emitter = Emitter {
             cfg: Default::default(),
-            cm: cm.clone(),
+            cm: Some(cm.clone()),
             comments: None,
             wr: Box::new(JsWriter::new(cm, "\n", &mut buf, None)),
         };
