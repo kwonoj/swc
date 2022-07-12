@@ -1,0 +1,13 @@
+[package]
+edition = "2021"
+name = "plugin_fixture_base_wasi"
+publish = false
+version = "0.0.1"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde = "1"
+swc_plugin = { path = "../../../../../swc_plugin" }
