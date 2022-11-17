@@ -70,7 +70,7 @@ crate_universe_dependencies(bootstrap = True)
 load("@rules_rust//crate_universe:defs.bzl", "crates_repository")
 
 crates_repository(
-    name = "crate_index_cargo_workspace",
+    name = "swc_cargo_workspace_index",
     cargo_config = "//:.cargo/config.toml",
     cargo_lockfile = "//:Cargo.lock",
     # `generator` is not necessary in official releases.
@@ -84,7 +84,7 @@ crates_repository(
 )
 
 load(
-    "@crate_index_cargo_workspace//:defs.bzl",
+    "@swc_cargo_workspace_index//:defs.bzl",
     cargo_workspace_crate_repositories = "crate_repositories",
 )
 
