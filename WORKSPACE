@@ -79,6 +79,7 @@ crates_repository(
     lockfile = "//:cargo-bazel-lock.json",
     manifests = [
         "//crates/swc_atoms:Cargo.toml",
+        "//crates/swc_macros_common:Cargo.toml",
     ],
 )
 

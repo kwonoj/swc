@@ -1,0 +1,16 @@
+load("@crate_index_cargo_workspace//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_macros_common",
+    srcs = glob(["src/**/*.rs"]),
+    version = "0.3.6",
+    deps = crate_deps([
+        "pmutil",
+        "proc-macro2",
+        "quote",
+        "syn",
+    ]),
+)
