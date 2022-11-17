@@ -55,7 +55,9 @@ load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_regi
 
 rules_rust_dependencies()
 
-rust_register_toolchains()
+rust_register_toolchains(
+    edition = "2021",
+)
 
 ###
 ### https://bazelbuild.github.io/rules_rust/crate_universe.html
