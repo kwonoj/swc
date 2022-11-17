@@ -1,0 +1,13 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "better_scoped_tls",
+    srcs = glob(["src/**/*.rs"]),
+    version = "0.1.0",
+    deps = crate_deps([
+        "scoped-tls",
+    ]),
+)
