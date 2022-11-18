@@ -31,7 +31,6 @@ rust_library(
         "//crates/from_variant",
         "//crates/swc_eq_ignore_macros",
     ],
-    version = "0.29.14",
     deps = base_deps,
 )
 
@@ -51,6 +50,5 @@ rust_library(
         "//crates/from_variant",
         "//crates/swc_eq_ignore_macros",
     ],
-    version = "0.29.14",
     deps = base_deps + crate_deps(["parking_lot"]),
 )

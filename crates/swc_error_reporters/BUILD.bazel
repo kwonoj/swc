@@ -6,7 +6,6 @@ package(default_visibility = ["//visibility:public"])
 rust_library(
     name = "swc_error_reporters",
     srcs = glob(["src/**/*.rs"]),
-    version = "0.13.14",
     deps = [
         "//crates/swc_common:swc_common_concurrent",
     ] + crate_deps([

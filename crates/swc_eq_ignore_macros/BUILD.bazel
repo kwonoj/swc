@@ -6,7 +6,6 @@ package(default_visibility = ["//visibility:public"])
 rust_proc_macro(
     name = "swc_eq_ignore_macros",
     srcs = glob(["src/**/*.rs"]),
-    version = "0.1.1",
     deps = crate_deps([
         "pmutil",
         "proc-macro2",

@@ -17,7 +17,6 @@ cargo_build_script(
 rust_library(
     name = "swc_atoms",
     srcs = ["src/lib.rs"],
-    version = "0.4.24",
     deps = [":build_rs"] + crate_deps([
         "once_cell",
         "rustc-hash",

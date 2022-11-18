@@ -6,7 +6,6 @@ package(default_visibility = ["//visibility:public"])
 rust_proc_macro(
     name = "from_variant",
     srcs = glob(["src/**/*.rs"]),
-    version = "0.1.4",
     deps = ["//crates/swc_macros_common"] + crate_deps([
         "pmutil",
         "proc-macro2",

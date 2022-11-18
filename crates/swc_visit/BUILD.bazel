@@ -7,7 +7,6 @@ rust_library(
     name = "swc_visit",
     srcs = glob(["src/**/*.rs"]),
     proc_macro_deps = ["//crates/swc_visit_macros"],
-    version = "0.5.3",
     deps = crate_deps([
         "either",
     ]),

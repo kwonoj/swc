@@ -6,7 +6,6 @@ package(default_visibility = ["//visibility:public"])
 rust_library(
     name = "swc_macros_common",
     srcs = glob(["src/**/*.rs"]),
-    version = "0.3.6",
     deps = crate_deps([
         "pmutil",
         "proc-macro2",

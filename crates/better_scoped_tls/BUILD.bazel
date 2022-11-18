@@ -6,7 +6,6 @@ package(default_visibility = ["//visibility:public"])
 rust_library(
     name = "better_scoped_tls",
     srcs = glob(["src/**/*.rs"]),
-    version = "0.1.0",
     deps = crate_deps([
         "scoped-tls",
     ]),
