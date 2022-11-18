@@ -1,0 +1,17 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_proc_macro")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_proc_macro(
+    name = "swc_visit_macros",
+    srcs = glob(["src/**/*.rs"]),
+    version = "0.5.4",
+    deps = ["//crates/swc_macros_common"] + crate_deps([
+        "Inflector",
+        "pmutil",
+        "proc-macro2",
+        "quote",
+        "syn",
+    ]),
+)
