@@ -65,3 +65,4 @@ pkg/
 swc-core-*.tgz
 
 .bazelrc.user
+/bazel-*

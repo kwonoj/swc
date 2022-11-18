@@ -56,3 +56,33 @@ load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_regi
 rules_rust_dependencies()
 
 rust_register_toolchains()
+
+###
+### https://bazelbuild.github.io/rules_rust/crate_universe.html
+load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
+
+crate_universe_dependencies(bootstrap = True)
+
+# https://github.com/bazelbuild/rules_rust/blob/aa0815dc927189002305fefe3f19043108daa464/examples/crate_universe/WORKSPACE.bazel#LL103-L124
+
+load("@rules_rust//crate_universe:defs.bzl", "crates_repository")
+
+crates_repository(
+    name = "crate_index_cargo_workspace",
+    cargo_config = "//:.cargo/config.toml",
+    cargo_lockfile = "//:Cargo.lock",
+    # `generator` is not necessary in official releases.
+    # See load satement for `cargo_bazel_bootstrap`.
+    generator = "@cargo_bazel_bootstrap//:cargo-bazel",
+    lockfile = "//:cargo-bazel-lock.json",
+    manifests = [
+        "//crates/swc_atoms:Cargo.toml",
+    ],
+)
+
+load(
+    "@crate_index_cargo_workspace//:defs.bzl",
+    cargo_workspace_crate_repositories = "crate_repositories",
+)
+
+cargo_workspace_crate_repositories()
