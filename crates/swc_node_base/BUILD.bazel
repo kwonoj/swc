@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+# [BAZELTODO]
+# rust_library(
+#     name = "swc_node_base",
+#     srcs = glob(["src/**/*.rs"]),
+#     deps = select({
+#         # [BAZELTODO]:
+#         # - support target_env = "gnu"
+#         # - build.rs support for tikv-jemalloc-sys, which
+#         # invokes sh + configure + c build
+#         # "@platforms//os:linux": crate_deps([
+#         #     "tikv-jemallocator",
+#         # ]),
+#         "//conditions:default": crate_deps([
+#             "mimalloc-rust",
+#         ]),
+#     }),
+# )
