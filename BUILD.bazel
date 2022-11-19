@@ -1,0 +1,2 @@
+# let .bazelrc specifcies clippy config
+exports_files(["clippy.toml"])

@@ -4,3 +4,8 @@ build --remote_cache=grpcs://remote.buildbuddy.io
 build --remote_timeout=3600
 
 try-import %workspace%/.bazelrc.user
+
+# Setup clippy (http://bazelbuild.github.io/rules_rust/rust_clippy.html)
+build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build --output_groups=+clippy_checks
+build --@rules_rust//:clippy.toml=//:clippy.toml
