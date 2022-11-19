@@ -1,0 +1,25 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_proc_macro", "rust_test")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_proc_macro(
+    name = "testing_macros",
+    srcs = glob(["src/**/*.rs"]),
+    deps = crate_deps([
+        "anyhow",
+        "glob",
+        "pmutil",
+        "proc-macro2",
+        "quote",
+        "regex",
+        "relative-path",
+        "syn",
+        "once_cell",
+    ]),
+)
+
+rust_test(
+    name = "testing_macros_test",
+    crate = ":testing_macros",
+)
