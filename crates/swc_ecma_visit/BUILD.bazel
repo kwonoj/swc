@@ -1,0 +1,18 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_ecma_visit",
+    srcs = glob(["src/**/*.rs"]),
+    deps = [
+        "//crates/swc_atoms",
+        "//crates/swc_common",
+        "//crates/swc_ecma_ast",
+        "//crates/swc_visit",
+    ] + crate_deps([
+        "num-bigint",
+        "tracing",
+    ]),
+)
