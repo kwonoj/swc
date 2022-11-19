@@ -1,0 +1,25 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "testing",
+    srcs = glob(["src/**/*.rs"]),
+    proc_macro_deps = [
+        "//crates/testing_macros",
+    ],
+    deps = [
+        "//crates/swc_common:swc_common_tty_emitter",
+        "//crates/swc_error_reporters:swc_error_reporters_tty_emitter",
+    ] + crate_deps([
+        "ansi_term",
+        "difference",
+        "once_cell",
+        "pretty_assertions",
+        "regex",
+        "serde_json",
+        "tracing",
+        "tracing-subscriber",
+    ]),
+)
