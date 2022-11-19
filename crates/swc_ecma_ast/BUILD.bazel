@@ -1,0 +1,34 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
+
+package(default_visibility = ["//visibility:public"])
+
+cargo_build_script(
+    name = "build_rs",
+    srcs = ["build.rs"],
+)
+
+rust_library(
+    name = "swc_ecma_ast",
+    srcs = glob(["src/**/*.rs"]),
+    proc_macro_deps = [
+        "//crates/string_enum",
+    ] + crate_deps([
+        "is-macro",
+    ]),
+    deps = [
+        ":build_rs",
+        "//crates/swc_atoms",
+        "//crates/swc_common",
+    ] + crate_deps([
+        "bitflags",
+        "num-bigint",
+        "scoped-tls",
+        "serde",
+        "unicode-id",
+    ]) + crate_deps([
+        # dev-dependencies
+        "serde_json",
+    ]),
+)
