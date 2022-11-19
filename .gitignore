@@ -63,3 +63,5 @@ pkg/
 # Used by scripts
 *.tmp.txt
 swc-core-*.tgz
+
+.bazelrc.user

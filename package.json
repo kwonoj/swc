@@ -94,6 +94,7 @@
         "@babel/preset-react": "^7.13.13",
         "@babel/preset-typescript": "^7.13.0",
         "@babel/types": "^7.14.0",
+        "@bazel/bazelisk": "^0.0.0-PLACEHOLDER",
         "@napi-rs/cli": "^2.10.0",
         "@swc/core": "=1.2.220",
         "@swc/helpers": "^0.4.2",
