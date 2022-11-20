@@ -1,0 +1,28 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_ecma_codegen",
+    srcs = glob(["src/**/*.rs"]),
+    proc_macro_deps = [
+        "//crates/swc_ecma_codegen_macros",
+    ],
+    deps = [
+        "//crates/swc_atoms",
+        "//crates/swc_common",
+        "//crates/swc_ecma_ast",
+    ] + crate_deps([
+        "memchr",
+        "num-bigint",
+        "once_cell",
+        "rustc-hash",
+        "serde",
+        "sourcemap",
+        "tracing",
+    ]),
+)
+
+#[BAZELTODO]
+#rust_test()
