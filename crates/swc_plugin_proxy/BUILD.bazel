@@ -1,0 +1,19 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_plugin_proxy",
+    srcs = glob(["src/**/*.rs"]),
+    proc_macro_deps = [
+        "//crates/swc_trace_macro",
+    ],
+    deps = [
+        "//crates/swc_common:swc_common_concurrent",
+        "//crates/swc_ecma_ast",
+        "//crates/better_scoped_tls",
+    ] + crate_deps([
+        "tracing",
+    ]),
+)
