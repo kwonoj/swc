@@ -1,0 +1,31 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_plugin_runner_filesystem_cache",
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["filesystem_cache"],
+    deps = [
+        "//crates/swc_common:swc_common_concurrent",
+        "//crates/swc_ecma_ast",
+        "//crates/swc_plugin_proxy",
+    ] + crate_deps([
+        "anyhow",
+        "enumset",
+        "once_cell",
+        "parking_lot",
+        "serde",
+        "serde_json",
+        "tracing",
+        "wasmer",
+        "wasmer-wasi",
+        "wasmer-cache",
+        "wasmer-compiler-cranelift",
+        "wasmer-engine-universal",
+    ]),
+)
+
+# [BAZELTODO]
+# rust_test()
