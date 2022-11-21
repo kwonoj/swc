@@ -9,8 +9,8 @@ do
 
   if [ -f "$CLI_BINARY_PATH" ]; then
       chmod +x $CLI_BINARY_PATH
-      cp $CLI_BINARY_PATH ./scripts/npm/$BINDING_ABI
+      gh release upload $RELEASE_VERSION $CLI_BINARY_PATH
   elif [ -f "$CLI_BINARY_PATH.exe" ]; then
-      cp $CLI_BINARY_PATH.exe ./scripts/npm/$BINDING_ABI
+      gh release upload $RELEASE_VERSION $CLI_BINARY_PATH.exe
   fi
 done

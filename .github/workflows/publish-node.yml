@@ -39,15 +39,15 @@ jobs:
               cargo build --manifest-path ./bindings/swc_cli/Cargo.toml --release --features plugin
               cp ./bindings/target/release/swc .
             target: x86_64-pc-windows-msvc
-          - host: windows-latest
-            build: |
-              export DISABLE_PLUGIN_E2E_TESTS=true
-              export CARGO_PROFILE_RELEASE_LTO=false
-              cargo build --manifest-path ./bindings/swc_cli/Cargo.toml --release --target i686-pc-windows-msvc
-              cp bindings/target/i686-pc-windows-msvc/release/swc .
-              yarn build --target i686-pc-windows-msvc --cargo-flags="--no-default-features" --features swc_v1
-              yarn test
-            target: i686-pc-windows-msvc
+          #- host: windows-latest
+          #  build: |
+          #    export DISABLE_PLUGIN_E2E_TESTS=true
+          #    export CARGO_PROFILE_RELEASE_LTO=false
+          #    cargo build --manifest-path ./bindings/swc_cli/Cargo.toml --release --target i686-pc-windows-msvc
+          #    cp bindings/target/i686-pc-windows-msvc/release/swc .
+          #    yarn build --target i686-pc-windows-msvc --cargo-flags="--no-default-features" --features swc_v1
+          #    yarn test
+          #  target: i686-pc-windows-msvc
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
@@ -457,10 +457,20 @@ jobs:
         run: |
           node ./scripts/update_fallback_dependencies.js
 
-      - name: Publish
+      #- name: Publish
+      #  run: |
+      #    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      #    npm publish --access public
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Test Publish
         run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          npm publish --access public
+          npm run prepublishOnly
+
+      - name: Upload CLI binaries to gh release
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+        run: |
+          ./scripts/cli_upload_gh_release.sh
