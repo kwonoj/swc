@@ -1,0 +1,9 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "configure_make")
+
+# [BAZELTODO] This is incomplete, need verification if
+# this successfully builds jemalloc.
+configure_make(
+    name = "jemalloc",
+    configure_command = "config",
+    configure_in_place = True,
+)
