@@ -40,6 +40,21 @@ load("@npm//:repositories.bzl", "npm_repositories")
 
 npm_repositories()
 
+### https://github.com/bazelbuild/rules_foreign_cc
+http_archive(
+    name = "rules_foreign_cc",
+    # TODO: Get the latest sha256 value from a bazel debug message or the latest
+    #       release on the releases page: https://github.com/bazelbuild/rules_foreign_cc/releases
+    #
+    # sha256 = "...",
+    strip_prefix = "rules_foreign_cc-0.9.0",
+    url = "https://github.com/bazelbuild/rules_foreign_cc/archive/0.9.0.tar.gz",
+)
+
+load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
+
+rules_foreign_cc_dependencies()
+
 ###
 ### https://github.com/bazelbuild/rules_rust
 
@@ -67,10 +82,22 @@ crate_universe_dependencies(bootstrap = True)
 
 # https://github.com/bazelbuild/rules_rust/blob/aa0815dc927189002305fefe3f19043108daa464/examples/crate_universe/WORKSPACE.bazel#LL103-L124
 
-load("@rules_rust//crate_universe:defs.bzl", "crates_repository")
+load("@rules_rust//crate_universe:defs.bzl", "crate", "crates_repository")
 
 crates_repository(
     name = "swc_cargo_workspace_index",
+    annotations = {
+        "tikv-jemalloc-sys": [crate.annotation(
+            # [BAZELTODO]
+            # This is incomplete, need further followup to actually substitute
+            # jemalloc-sys's build.rs with a custom one.
+            # https://github.com/bazelbuild/rules_rust/issues/1670
+            build_script_data = [
+                "//crates/swc_node_base:jemalloc",
+            ],
+            gen_build_script = False,
+        )],
+    },
     cargo_config = "//:.cargo/config.toml",
     cargo_lockfile = "//:Cargo.lock",
     # `generator` is not necessary in official releases.
