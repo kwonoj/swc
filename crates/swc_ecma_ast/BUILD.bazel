@@ -9,6 +9,20 @@ cargo_build_script(
     srcs = ["build.rs"],
 )
 
+base_deps = [
+    ":build_rs",
+    "//crates/swc_atoms",
+] + crate_deps([
+    "bitflags",
+    "num-bigint",
+    "scoped-tls",
+    "serde",
+    "unicode-id",
+]) + crate_deps([
+    # dev-dependencies
+    "serde_json",
+])
+
 rust_library(
     name = "swc_ecma_ast",
     srcs = glob(["src/**/*.rs"]),
@@ -17,18 +31,21 @@ rust_library(
     ] + crate_deps([
         "is-macro",
     ]),
-    deps = [
-        ":build_rs",
-        "//crates/swc_atoms",
+    deps = base_deps + [
         "//crates/swc_common",
+    ],
+)
+
+rust_library(
+    name = "swc_ecma_ast-common_concurrent",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "swc_ecma_ast",
+    proc_macro_deps = [
+        "//crates/string_enum",
     ] + crate_deps([
-        "bitflags",
-        "num-bigint",
-        "scoped-tls",
-        "serde",
-        "unicode-id",
-    ]) + crate_deps([
-        # dev-dependencies
-        "serde_json",
+        "is-macro",
     ]),
+    deps = base_deps + [
+        "//crates/swc_common:swc_common_concurrent",
+    ],
 )
