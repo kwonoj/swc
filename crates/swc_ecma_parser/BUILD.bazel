@@ -43,3 +43,30 @@ rust_library(
 #        "walkdir",
 #    ]),
 #)
+
+rust_library(
+    name = "swc_ecma_parser-common_concurrent",
+    srcs = glob(["src/**/*.rs"]),
+    # default features
+    crate_features = [
+        "typescript",
+    ],
+    crate_name = "swc_ecma_parser",
+    proc_macro_deps = [
+        "//crates/enum_kind",
+    ],
+    deps = [
+        "//crates/swc_atoms",
+        "//crates/swc_common:swc_common_concurrent",
+        "//crates/swc_ecma_ast:swc_ecma_ast-common_concurrent",
+        "//crates/swc_ecma_visit:swc_ecma_visit-common_concurrent",
+    ] + crate_deps([
+        "either",
+        "lexical",
+        "num-bigint",
+        "serde",
+        "smallvec",
+        "tracing",
+        "typed-arena",
+    ]),
+)

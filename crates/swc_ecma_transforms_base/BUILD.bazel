@@ -1,0 +1,70 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+base_deps = [
+    "//crates/better_scoped_tls",
+    "//crates/swc_atoms",
+] + crate_deps([
+    "bitflags",
+    "once_cell",
+    "phf",
+    "rustc-hash",
+    "serde",
+    "smallvec",
+    "tracing",
+])
+
+# [BAZELTODO] dev-dependencies
+rust_library(
+    name = "swc_ecma_transforms_base",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "swc_ecma_transforms_base",
+    data = glob(["src/helpers/**/*.js"]),
+    proc_macro_deps = [],
+    deps = base_deps + [
+        "//crates/swc_common",
+        "//crates/swc_ecma_ast",
+        "//crates/swc_ecma_parser",
+        "//crates/swc_ecma_utils",
+        "//crates/swc_ecma_visit",
+    ],
+)
+
+rust_library(
+    name = "swc_ecma_transforms_base_concurrent-renamer",
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["concurrent-renamer"],
+    crate_name = "swc_ecma_transforms_base",
+    data = glob(["src/helpers/**/*.js"]),
+    proc_macro_deps = [],
+    deps = base_deps + crate_deps(["rayon"]) + [
+        "//crates/swc_common",
+        "//crates/swc_ecma_ast",
+        "//crates/swc_ecma_parser",
+        "//crates/swc_ecma_utils",
+        "//crates/swc_ecma_visit",
+    ],
+)
+
+rust_library(
+    name = "swc_ecma_transforms_base_concurrent",
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = [
+        "concurrent-renamer",
+        "concurrent",
+    ],
+    crate_name = "swc_ecma_transforms_base",
+    data = glob(["src/helpers/**/*.js"]),
+    proc_macro_deps = [],
+    deps = base_deps + [
+        "//crates/swc_common:swc_common_concurrent",
+        "//crates/swc_ecma_ast:swc_ecma_ast-common_concurrent",
+        "//crates/swc_ecma_utils:swc_ecma_utils_concurrent",
+        "//crates/swc_ecma_parser:swc_ecma_parser-common_concurrent",
+        "//crates/swc_ecma_visit:swc_ecma_visit-common_concurrent",
+    ] + crate_deps([
+        "rayon",
+    ]),
+)

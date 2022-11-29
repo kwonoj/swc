@@ -21,7 +21,7 @@ rust_library(
 )
 
 rust_library(
-    name = "swc_ecma_visit-common-concurrent",
+    name = "swc_ecma_visit-common_concurrent",
     srcs = glob(["src/**/*.rs"]),
     crate_name = "swc_ecma_visit",
     deps = base_deps + [
