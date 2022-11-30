@@ -1,0 +1,20 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_config",
+    srcs = glob(["src/**/*.rs"]),
+    proc_macro_deps = ["//crates/swc_config_macro"],
+    deps = crate_deps([
+        "indexmap",
+        "serde",
+        "serde_json",
+    ]),
+)
+
+rust_test(
+    name = "swc_config_test",
+    crate = ":swc_config",
+)

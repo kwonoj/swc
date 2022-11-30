@@ -1,0 +1,41 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_error_reporters",
+    srcs = glob(["src/**/*.rs"]),
+    deps = [
+        "//crates/swc_common:swc_common_concurrent",
+    ] + crate_deps([
+        "anyhow",
+        "miette",
+        "once_cell",
+        "parking_lot",
+    ]),
+)
+
+rust_test(
+    name = "swc_error_reporters_test",
+    crate = ":swc_error_reporters",
+)
+
+rust_library(
+    name = "swc_error_reporters_tty_emitter",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "swc_error_reporters",
+    deps = [
+        "//crates/swc_common:swc_common_tty_emitter",
+    ] + crate_deps([
+        "anyhow",
+        "miette",
+        "once_cell",
+        "parking_lot",
+    ]),
+)
+
+rust_test(
+    name = "swc_error_reporters_tty_emitter_test",
+    crate = ":swc_error_reporters_tty_emitter",
+)

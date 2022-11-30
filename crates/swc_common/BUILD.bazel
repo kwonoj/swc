@@ -1,0 +1,85 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+package(default_visibility = ["//visibility:public"])
+
+base_deps = [
+    "//crates/better_scoped_tls",
+    "//crates/swc_atoms",
+    "//crates/swc_visit",
+] + crate_deps([
+    "ahash",
+    "cfg-if",
+    "either",
+    "new_debug_unreachable",
+    "num-bigint",
+    "once_cell",
+    "rustc-hash",
+    "serde",
+    "siphasher",
+    "string_cache",
+    "tracing",
+    "unicode-width",
+    "url",
+])
+
+rust_library(
+    name = "swc_common",
+    srcs = glob(["src/**/*.rs"]),
+    proc_macro_deps = [
+        "//crates/ast_node",
+        "//crates/from_variant",
+        "//crates/swc_eq_ignore_macros",
+    ],
+    deps = base_deps,
+)
+
+rust_test(
+    name = "swc_common_test",
+    crate = ":swc_common",
+)
+
+# Note: https://bazelbuild.slack.com/archives/CSV56UT0F/p1652691033613939
+# bazel doesn't have cargo-like feature control system.
+# Instead should have corresponding build targets with explcit list of
+# feature combination to be used.
+rust_library(
+    name = "swc_common_concurrent",
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = [
+        "concurrent",
+    ],
+    crate_name = "swc_common",
+    proc_macro_deps = [
+        "//crates/ast_node",
+        "//crates/from_variant",
+        "//crates/swc_eq_ignore_macros",
+    ],
+    deps = base_deps + crate_deps(["parking_lot"]),
+)
+
+rust_test(
+    name = "swc_common_concurrent_test",
+    crate = ":swc_common_concurrent",
+)
+
+rust_library(
+    name = "swc_common_tty_emitter",
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = [
+        "concurrent",
+        "tty_emitter",
+    ],
+    crate_name = "swc_common",
+    proc_macro_deps = [
+        "//crates/ast_node",
+        "//crates/from_variant",
+        "//crates/swc_eq_ignore_macros",
+    ],
+    deps = base_deps + crate_deps(["parking_lot"]),
+)
+
+rust_test(
+    name = "swc_common_tty_emitter_test",
+    crate = ":swc_common_concurrent",
+)

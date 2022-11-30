@@ -1,0 +1,61 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+base_deps = [
+] + crate_deps([
+    "ahash",
+    "anyhow",
+    "pathdiff",
+    "serde",
+])
+
+rust_library(
+    name = "swc_ecma_loader",
+    srcs = glob(["src/**/*.rs"]),
+    deps = base_deps + [
+        "//crates/swc_common",
+    ],
+)
+
+rust_library(
+    name = "swc_ecma_loader_node",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "swc_ecma_loader",
+    deps = base_deps + [
+        "//crates/swc_common",
+    ] + crate_deps([
+        "normpath",
+        "serde_json",
+        "dashmap",
+        "once_cell",
+        "path-clean",
+    ]),
+)
+
+rust_library(
+    name = "swc_ecma_loader_cache",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "swc_ecma_loader",
+    deps = base_deps + [
+        "//crates/swc_common",
+    ] + crate_deps([
+        "lru",
+        "parking_lot",
+    ]),
+)
+
+rust_library(
+    name = "swc_ecma_loader_tsc",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "swc_ecma_loader",
+    deps = base_deps + [
+        "//crates/swc_common",
+    ] + crate_deps([
+        "dashmap",
+        "once_cell",
+    ]) + [
+        "//crates/swc_cached",
+    ],
+)

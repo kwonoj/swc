@@ -1,0 +1,13 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_node_base",
+    srcs = glob(["src/**/*.rs"]),
+    deps = crate_deps([
+        "mimalloc-rust",
+        "tikv-jemallocator",
+    ]),
+)

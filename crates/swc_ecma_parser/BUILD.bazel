@@ -1,0 +1,72 @@
+load("@swc_cargo_workspace_index//:defs.bzl", "crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "swc_ecma_parser",
+    srcs = glob(["src/**/*.rs"]),
+    # default features
+    crate_features = [
+        "typescript",
+    ],
+    proc_macro_deps = [
+        "//crates/enum_kind",
+    ],
+    deps = [
+        "//crates/swc_atoms",
+        "//crates/swc_common",
+        "//crates/swc_ecma_ast",
+        "//crates/swc_ecma_visit",
+    ] + crate_deps([
+        "either",
+        "lexical",
+        "num-bigint",
+        "serde",
+        "smallvec",
+        "tracing",
+        "typed-arena",
+    ]),
+)
+
+# [BAZELTODO]
+#rust_test(
+#    name = "swc_ecma_parser_test",
+#    crate = ":swc_ecma_parser",
+#    deps = [
+#        "//crates/swc_node_base",
+#        "//crates/testing",
+#    ] + crate_deps([
+#        "criterion",
+#        "pretty_assertions",
+#        "serde_json",
+#        "walkdir",
+#    ]),
+#)
+
+rust_library(
+    name = "swc_ecma_parser-common_concurrent",
+    srcs = glob(["src/**/*.rs"]),
+    # default features
+    crate_features = [
+        "typescript",
+    ],
+    crate_name = "swc_ecma_parser",
+    proc_macro_deps = [
+        "//crates/enum_kind",
+    ],
+    deps = [
+        "//crates/swc_atoms",
+        "//crates/swc_common:swc_common_concurrent",
+        "//crates/swc_ecma_ast:swc_ecma_ast-common_concurrent",
+        "//crates/swc_ecma_visit:swc_ecma_visit-common_concurrent",
+    ] + crate_deps([
+        "either",
+        "lexical",
+        "num-bigint",
+        "serde",
+        "smallvec",
+        "tracing",
+        "typed-arena",
+    ]),
+)

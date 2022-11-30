@@ -1,0 +1,48 @@
+name: CI (Bazel experiment)
+
+# Unused; refer buildbuddy.yaml for the actual trigger.
+#on:
+#  pull_request:
+#    types: ['opened', 'reopened', 'synchronize']
+#  push:
+#    branches:
+#      - main
+
+env:
+  CI: 1
+  CARGO_INCREMENTAL: 0
+  CARGO_TERM_COLOR: "always"
+  DIFF: 0
+  # For faster CI
+  RUST_LOG: "off"
+  # https://github.com/swc-project/swc/pull/3742
+  RUST_MIN_STACK: 4194304
+
+# Clippy is globally enabled via .bazelrc configuration, no need separate ci job
+jobs:
+  build:
+    name: Build, test
+    environment: BAZEL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: bazelbuild/setup-bazelisk@v2
+      - name: Mount bazel cache
+        uses: actions/cache@v3
+        with:
+          path: "/home/runner/.cache/bazel"
+          key: bazel
+      - name: Cache rust artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: bazel-cargo
+          cache-on-failure: true
+      - name: Run bazel build for all targets
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          echo "build --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY" > .bazelrc.user
+          bazel build //...
+          bazel test //...
