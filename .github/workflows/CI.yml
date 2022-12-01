@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "trace-start=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -83,7 +83,7 @@ jobs:
         with:
           submodules: true
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -110,7 +110,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -160,7 +160,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -204,15 +204,16 @@ jobs:
         with:
           submodules: true
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
-        if: ${{ matrix.os != 'windows-latest' }}
+      - uses: kwonoj/gha-buildevents@feat-windows
+        # if: ${{ matrix.os != 'windows-latest' }}
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
           matrix-key: ${{ matrix.os }}
 
       - name: Set trace id
-        if: ${{ matrix.os != 'windows-latest' }}
+        # if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
         run: |
           STEP_ID=cargo-check-${{ matrix.os }}
           echo "STEP_ID=${STEP_ID}" >> $GITHUB_ENV
@@ -233,18 +234,18 @@ jobs:
           cache: "yarn"
 
       - name: Install node dependencies (non-Windows)
-        if: ${{ matrix.os != 'windows-latest' }}
+        # if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: |
           corepack enable
-          buildevents cmd $TRACE_ID $STEP_ID yarn -- yarn
+          buildevents --shell $SHELL cmd $TRACE_ID $STEP_ID yarn -- yarn
 
-      - name: Install node dependencies (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: bash
-        run: |
-          corepack enable
-          yarn
+      # - name: Install node dependencies (Windows)
+      #   if: ${{ matrix.os == 'windows-latest' }}
+      #   shell: bash
+      #   run: |
+      #     corepack enable
+      #     yarn
 
       # Ensure that all components are compilable.
       - name: Run cargo check for all targets (non-Windows)
@@ -268,7 +269,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -688,7 +689,7 @@ jobs:
         with:
           submodules: true
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         if: runner.os != 'Windows'
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
@@ -869,7 +870,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         if: ${{ matrix.os != 'windows-latest' }}
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
@@ -952,7 +953,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+      - uses: kwonoj/gha-buildevents@feat-windows
         with:
           apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
           dataset: swc-ci-workflow
@@ -1059,7 +1060,7 @@ jobs:
     if: ${{ always() }}
     steps:
     - uses: technote-space/workflow-conclusion-action@v3
-    - uses: kwonoj/gha-buildevents@79c240fefccf1b23be902df8f443af8a84971bfb
+    - uses: kwonoj/gha-buildevents@feat-windows
       with:
         # Required: a Honeycomb API key - needed to send traces.
         apikey: ${{ secrets.HONEYCOMB_BUILDEVENT_APIKEY }}
