@@ -32,7 +32,7 @@ use crate::{
 /// however it is not gauranteed to be compatible across wasmer's
 /// internal changes.
 /// https://github.com/wasmerio/wasmer/issues/2781
-const MODULE_SERIALIZATION_VERSION: &str = "v7";
+const MODULE_SERIALIZATION_VERSION: &str = "v8";
 
 #[derive(Default)]
 pub struct PluginModuleCacheInner {
