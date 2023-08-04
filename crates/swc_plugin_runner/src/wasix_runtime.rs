@@ -53,32 +53,15 @@ impl wasmer_wasix::http::HttpClient for StubHttpClient {
 pub fn build_wasi_runtime(
     _fs_cache_path: Option<PathBuf>,
 ) -> Option<Arc<dyn Runtime + Send + Sync>> {
-    use wasmer_wasix::{
-        runtime::{
-            module_cache::{ModuleCache, SharedCache},
-            package_loader::BuiltinPackageLoader,
-            resolver::MultiSource,
-            task_manager::tokio::TokioTaskManager,
-        },
-        virtual_net, PluggableRuntime,
-    };
+    #[cfg(feature = "plugin_transform_host_native_shared_runtime")]
+    let task_mgr = tokio::runtime::Handle::current();
 
-    let cache =
-        SharedCache::default().with_fallback(wasmer_wasix::runtime::module_cache::in_memory());
+    #[cfg(not(feature = "plugin_transform_host_native_shared_runtime"))]
+    let task_mgr = wasmer_wasix::runtime::task_manager::tokio::TokioTaskManager::default();
 
-    let dummy_loader = BuiltinPackageLoader::new_with_client(".", Arc::new(StubHttpClient));
-    let rt = PluggableRuntime {
-        rt: Arc::new(TokioTaskManager::shared()),
-        networking: Arc::new(virtual_net::UnsupportedVirtualNetworking::default()),
-        engine: Some(ENGINE.lock().clone()),
-        tty: None,
-        source: Arc::new(MultiSource::new()),
-        module_cache: Arc::new(cache),
-        http_client: None,
-        package_loader: Arc::new(dummy_loader),
-    };
-
-    Some(Arc::new(rt))
+    Some(Arc::new(wasmer_wasix::PluggableRuntime::new(Arc::new(
+        task_mgr,
+    ))))
 }
 
 /// Creates an instnace of [Store] with custom engine instead of default one to
